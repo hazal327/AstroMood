@@ -17,12 +17,12 @@ AstroMood is an AI-powered astrology companion that provides personalized sugges
 
 ## 👩‍💻 Meet the Team  
 
-| 🌠 Name | 🌍 Role |
-|---------|--------|
-| **Esmanur Ulu** 
-| **Hazal Epözdemir**
-| **Zeynep Yetkin** 
-| **Sümeyye Sıla Altay** 
+| 🌠 Name | 
+|---------|
+| **Esmanur Ulu** |
+| **Hazal Epözdemir** |
+| **Zeynep Yetkin** |
+| **Sümeyye Sıla Altay** |
 
 ## 🚀 Stay Tuned!  
 We're working hard to bring AstroMood to life! Follow our journey and be part of something cosmic. ✨  
