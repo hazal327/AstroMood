@@ -65,4 +65,37 @@ The system must meet the following quality standards:
    - The system must be able to handle high traffic without performance degradation.  
 
 5. **Reliability**  
-   - The system must ensure 24/7 uptime and always provide real-time data.  
+   - The system must ensure 24/7 uptime and always provide real-time data.
+
+  
+# Effort Estimation
+
+## Method Used: Expert Judgment
+Effort estimation has been carried out using the **Expert Judgment** method, where team members analyzed the complexity and workload of each phase based on their experience and project scope.
+
+## Effort Estimation for Each Phase
+
+| Phase               | Start Date | End Date | Total Effort (Person-Hours) | Per Person (4 Members) |
+|---------------------|-----------|---------|---------------------------|------------------------|
+| Requirements Gathering | Feb 14    | Mar 2   | 40                        | 10                     |
+| Design             | Mar 2      | Mar 7   | 20                        | 5                      |
+| Development        | Mar 7      | Mar 25  | 80                        | 20                     |
+| Testing           | Mar 2      | Mar 25  | 40                        | 10                     |
+| Deployment         | Mar 25     | Mar 26  | 10                        | 2.5                    |
+| Closure           | Mar 26     | Mar 26  | 10                        | 2.5                    |
+| **Total Effort**    | **Feb 14** | **Mar 26** | **200**                   | **50 per person**      |
+
+## Task Assignments
+
+| Team Member         | Assigned Tasks                   | Total Effort (Hours) |
+|---------------------|--------------------------------|----------------------|
+| **Esmanur Ulu**       | Design, Development, Testing | 50 |
+| **Zeynep Yetkin**     | Requirements Gathering, Development, Closure  | 50 |
+| **Hazal Epözdemir**   | Design, Development, Deployment  | 50 |
+| **Sümeyye Sıla Altay**| Requirements Gathering, Testing, Deployment  | 50 |
+
+Each team member is assigned an equal effort of **50 hours**, considering their roles and expertise. The distribution ensures fairness and effective workload management.
+
+---
+
+This estimation will be updated as the project progresses to reflect any changes in workload distribution.
