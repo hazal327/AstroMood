@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroMood - Astroloji Rehberiniz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="logo">AstroMood</div>
+    </nav>
+
+    <div class="container">
+        <!-- Adım 1: Burç Hesaplama -->
+        <section id="calculator-section" class="active-step">
+            <h2>Doğum Tarihinizi Girin</h2>
+            <form id="zodiacForm">
+                <div class="birthdate-container">
+                    <select id="day" required>
+                        <option value="">Gün</option>
+                    </select>
+                    <select id="month" required>
+                        <option value="">Ay</option>
+                        <option value="1">Ocak</option>
+                        <option value="2">Şubat</option>
+                        <option value="3">Mart</option>
+                        <option value="4">Nisan</option>
+                        <option value="5">Mayıs</option>
+                        <option value="6">Haziran</option>
+                        <option value="7">Temmuz</option>
+                        <option value="8">Ağustos</option>
+                        <option value="9">Eylül</option>
+                        <option value="10">Ekim</option>
+                        <option value="11">Kasım</option>
+                        <option value="12">Aralık</option>
+                    </select>
+                </div>
+                <button type="submit">Burcumu Hesapla</button>
+            </form>
+        </section>
+
+        <!-- Adım 2: Tarih Seçimi -->
+        <section id="date-section" class="hidden-step">
+            <h2>Yorum İçin Tarih Seçin</h2>
+            <div class="date-select-container">
+                <select id="horoscopeDay">
+                    <option value="TODAY">Bugün</option>
+                    <option value="TOMORROW">Yarın</option>
+                    <option value="YESTERDAY">Dün</option>
+                </select>
+                <button id="showHoroscopeBtn">Yorumu Göster</button>
+            </div>
+        </section>
+
+        <!-- Sonuçlar -->
+        <!-- Sonuçlar -->
+<section id="result-section" class="hidden-step">
+    <div class="result-container">
+        <!-- Sol Panel - Yorum -->
+        <div class="horoscope-panel">
+            <div id="zodiacResult"></div>
+            <div id="horoscopeResult"></div>
+        </div>
+
+        <!-- Sağ Panel - Öneri Sistemi -->
+        <div class="recommendation-panel">
+            <div class="mood-selector">
+                <h3>Modunuzu Seçin 🌟</h3>
+                <div class="mood-buttons">
+                    <button data-mood="happy">Mutlu</button>
+                    <button data-mood="sad">Üzgün</button>
+                    <button data-mood="stressed">Stresli</button>
+                    <button data-mood="energetic">Enerjik</button>
+                </div>
+                
+                <h3>Ne Önerilsin? 🎯</h3>
+                <div class="type-buttons">
+                    <button data-type="music">Müzik</button>
+                    <button data-type="movie">Film</button>
+                    <button data-type="book">Kitap</button>
+                    <button data-type="activity">Aktivite</button>
+                </div>
+
+                <button id="generateRecommendationBtn" class="recommend-button">Önerimi Oluştur</button>
+                <div id="recommendationResult" class="recommendation-result"></div>
+            </div>
+        </div>
+    </div>
+</section>
+    </div>
+
+    <!-- Feedback Sistemi -->
+    <div class="feedback-container">
+        <div class="rating-text">Bizi Değerlendirin:</div>
+        <div class="stars-container">
+            <div class="star" data-value="1"></div>
+            <div class="star" data-value="2"></div>
+            <div class="star" data-value="3"></div>
+            <div class="star" data-value="4"></div>
+            <div class="star" data-value="5"></div>
+        </div>
+        <div class="thank-you-message">Teşekkür ederiz!</div>
+    </div>
+
+    <!-- Yıldız Animasyonları -->
+    <section id="stars"></section>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
