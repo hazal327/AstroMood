@@ -82,6 +82,7 @@ The acceptance criteria for the four main scenarios of the project are as follow
 ## Appendices
 
 ### Correct Zodiac Calculation test cases:
+images/img1.png
 
 
 ### Mood Entry Validation test case:
