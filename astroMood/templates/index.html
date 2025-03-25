@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <nav>
         <div class="logo">AstroMood</div>
@@ -102,11 +103,20 @@
             <div class="star" data-value="5"></div>
         </div>
         <div class="thank-you-message">Teşekkür ederiz!</div>
+        <div id="rating-stats" class="rating-stats"></div>
     </div>
 
     <!-- Yıldız Animasyonları -->
     <section id="stars"></section>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <div class="motivation-widget" id="motivationWidget">
+        <div class="motivator-toggle" id="toggleMotivation">💬</div>
+        <div class="motivator-card hidden" id="motivationCard">
+          <p id="motivationText">Burada motivasyon cümlesi görünecek.</p>
+        </div>
+      </div>
+      
+      <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
 </body>
 </html>
