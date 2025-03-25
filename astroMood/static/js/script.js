@@ -19,27 +19,58 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     createStars();
-
-    // Feedback sistemi
+//feedback için
     let isRated = false;
-    document.querySelectorAll('.star').forEach(star => {
-        star.addEventListener('mouseover', (e) => {
-            if(isRated) return;
-            const value = parseInt(e.target.dataset.value);
-            document.querySelectorAll('.star').forEach((s, index) => {
-                s.classList.toggle('full', index < value);
-            });
-        });
 
-        star.addEventListener('click', (e) => {
-            if(isRated) return;
-            isRated = true;
-            document.querySelector('.stars-container').style.opacity = '0';
-            document.querySelector('.rating-text').style.opacity = '0';
-            document.querySelector('.thank-you-message').style.opacity = '1';
-            setTimeout(() => document.querySelector('.feedback-container').remove(), 2000);
+document.querySelectorAll('.star').forEach(star => {
+    star.addEventListener('mouseover', (e) => {
+        if (isRated) return;
+        const value = parseInt(e.target.dataset.value);
+        document.querySelectorAll('.star').forEach((s, index) => {
+            s.classList.toggle('full', index < value);
         });
     });
+
+    star.addEventListener('click', async (e) => {
+        if (isRated) return;
+
+        isRated = true;
+        const value = parseInt(e.target.dataset.value);
+
+        // BACKEND’E GÖNDERİYORUZ
+        await fetch('/submit_rating', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ rating: value })
+        });
+
+        // Görsel efektler korunuyor
+        document.querySelector('.stars-container').style.opacity = '0';
+        document.querySelector('.rating-text').style.opacity = '0';
+        document.querySelector('.thank-you-message').style.opacity = '1';
+        
+        // İstatistikleri al
+const res = await fetch('/get_rating_stats');
+const stats = await res.json();
+
+// "Teşekkür ederiz!" sabit kalsın
+const msgEl = document.querySelector('.thank-you-message');
+msgEl.innerText = `Teşekkür ederiz!`;
+msgEl.style.opacity = '1';
+msgEl.style.maxHeight = '50px';
+
+// Ortalama puanı alt satırda göster
+const statsEl = document.getElementById("rating-stats");
+statsEl.innerText = `Ortalama puan: ⭐️ ${stats.average} / 5 (${stats.total} oy)`;
+statsEl.style.opacity = '1';
+
+// Geri bildirim kutusunu kaldırma istersen burayı yoruma alabilirsin
+setTimeout(() => document.querySelector('.feedback-container').remove(), 3000);
+
+    });
+});
 
     // Günleri doldur
     const daySelect = document.getElementById('day');
@@ -155,29 +186,110 @@ document.querySelectorAll('.mood-buttons button, .type-buttons button').forEach(
         }
     });
 });
-
-// Öneri oluştur butonu
-document.getElementById('generateRecommendationBtn').addEventListener('click', () => {
-    if(!selectedMood || !selectedType) {
+document.getElementById('generateRecommendationBtn').addEventListener('click', async () => {
+    if (!selectedMood || !selectedType) {
         alert('Lütfen hem mod hem de öneri türü seçin!');
         return;
     }
-    
-    // API çağrısı için mock data (Gerçek uygulamada API'ye bağlanmalı)
-    const mockData = {
-        happy: {
-            music: "Upbeat pop müzikler - Taylor Swift - Shake It Off",
-            movie: "Komedi filmleri - The Grand Budapest Hotel",
-            book: "Mutluluk Becerileri - Stefan Klein",
-            activity: "Açık havada yürüyüş yapın"
-        },
-        // Diğer mood'lar için veriler eklenmeli...
-    };
 
     const resultDiv = document.getElementById('recommendationResult');
+    let recommendationText = "";
+
+    if (selectedType === "activity") {
+        try {
+            const res = await fetch("/get_activity");  // Artık kendi sunucuna istek atıyorsun
+            const data = await res.json();
+    
+            if (data && data.activity) {
+                recommendationText = `🎯 Önerilen Aktivite: ${data.activity}`;
+            } else {
+                recommendationText = "Aktivite bulunamadı. 😕";
+            }
+        } catch (error) {
+            recommendationText = "Şu anlık aktivite önerilemedi 😕";
+            console.error("Aktivite API hatası:", error);
+        }
+    }
+
+    else if (selectedType === "book") {
+        // 📚 Google Books API - Kitap Önerisi
+        if (selectedMood === "sad") {
+            query = "üzgün |acı |kaybetmek | gözyaşı |dram | korku"; // sad mood için özel anahtar kelimeler
+        } else if (selectedMood === "happy") {
+            query = "mutluluk|pozitif |heyecan | güzellik | gülümseme ";
+        } else if (selectedMood === "stressed") {
+            query = "rahatlama|zihinsel huzur| kaygı | huzursuzluk";
+        } else if (selectedMood === "energetic") {
+            query = "  macera | deneyim | enerjik";
+        }
+    
+        const res = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&langRestrict=tr&maxResults=20`);
+        const data = await res.json();
+        const book = data.items[Math.floor(Math.random() * data.items.length)].volumeInfo;
+    
+        recommendationText = `${book.title} - ${book.authors?.[0] || "Bilinmeyen Yazar"}`;
+    }
+
+    else if (selectedType === "music") {
+        // 🎵 iTunes Search API - Müzik Önerisi
+        const moodKeyword = selectedMood === "sad" ? "sad" : selectedMood === "happy" ? "happy" : selectedMood === "stressed" ? "stressed" :selectedMood === "energetic" ? "energetic":  "music";
+       
+        const res = await fetch(`https://itunes.apple.com/search?term=${moodKeyword}&media=music&limit=25`);
+        const data = await res.json();
+        const track = data.results[Math.floor(Math.random() * data.results.length)];
+        recommendationText = `${track.trackName} - ${track.artistName}`;
+    }
+
+    else {  //selected type is film 
+        try {
+            const res = await fetch("/get_movie");
+            const data = await res.json();
+    
+            if (data.title) {
+                recommendationText = `🎬 ${data.title} (${data.release})\n${data.overview}`;
+            } else {
+                recommendationText = "Film önerisi bulunamadı 😕";
+            }
+        } catch (error) {
+            recommendationText = "Film önerisi alınırken hata oluştu 😕";
+            console.error("Film API hatası:", error);
+        }
+    }
+
+    // Sonucu yazdır
     resultDiv.innerHTML = `
         <h4>${selectedMood.toUpperCase()} modu için ${selectedType.toUpperCase()} önerisi:</h4>
-        <p>${mockData[selectedMood][selectedType]}</p>
+        <p>${recommendationText}</p>
     `;
-    resultDiv.style.display = 'block';
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const toggleBtn = document.getElementById("toggleMotivation");
+        const card = document.getElementById("motivationCard");
+        const textEl = document.getElementById("motivationText");
+    
+        let quotes = [];
+    
+        // İlk yüklemede tüm alıntıları çek
+        fetch("https://type.fit/api/quotes")
+            .then(res => res.json())
+            .then(data => {
+                quotes = data;
+            })
+            .catch(() => {
+                textEl.innerText = "Motivasyon alıntıları yüklenemedi 😕";
+            });
+    
+        toggleBtn.addEventListener("click", () => {
+            if (quotes.length > 0) {
+                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                textEl.innerText = `"${randomQuote.text}" — ${randomQuote.author || "Bilinmeyen"}`;
+            } else {
+                textEl.innerText = "Motivasyon cümlesi bulunamadı 😅";
+            }
+    
+            card.classList.toggle("hidden");
+        });
+    });
+    
+
 });
