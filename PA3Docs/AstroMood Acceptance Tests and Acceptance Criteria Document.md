@@ -83,7 +83,7 @@ The acceptance criteria for the four main scenarios of the project are as follow
 
 ### Correct Zodiac Calculation test cases:
 
-<img src="https://github.com/esmanurulu/astroMood/blob/main/images/img1.png?raw=true" alt="AstroMood Grafik" width="400" />
+<img src="https://github.com/zeyyet/astroMood/blob/main/images/img1.png?raw=true" alt="AstroMood Grafik" width="400" />
 
 ### Mood Entry Validation test case:
 
