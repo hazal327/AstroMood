@@ -98,5 +98,5 @@ invalid input:
 <img src="https://github.com/hazal327/AstroMood/blob/main/images/img6.png" width="400" />
 
 ### Feedback System:
-
+<img src="https://github.com/hazal327/AstroMood/blob/main/images/img9.png" width="400" />
 
