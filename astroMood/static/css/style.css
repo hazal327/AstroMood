@@ -337,6 +337,14 @@ button.active {
     margin: 30px 0;
 }
 
+.rating-stats {
+    text-align: center;
+    font-size: 1.1em;
+    margin-top: 8px;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
 /* Responsive Güncellemeler */
 @media (max-width: 1200px) {
     .result-container {
@@ -361,3 +369,52 @@ button.active {
     }
 }
 
+.recommendation-result {
+    margin-top: 20px;
+    font-size: 1.3em;
+    text-align: center;
+    font-weight: bold;
+}
+
+.motivation-widget {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 999;
+    display: block; /* ARTIK GÖRÜNECEK */
+}
+
+.motivator-toggle {
+    width: 50px;
+    height: 50px;
+    background-color: #9d50bb;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s ease;
+}
+
+.motivator-toggle:hover {
+    transform: scale(1.1);
+}
+
+.motivator-card {
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-top: 10px;
+    max-width: 250px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    font-weight: bold;
+    font-size: 1em;
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
