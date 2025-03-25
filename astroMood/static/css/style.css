@@ -6,9 +6,11 @@
 
 body {
     font-family: "Lucida Console", "Courier New", monospace; 
-    background: #aba8c0;
+    background: #0f0c29;
+    background: linear-gradient(to right, #24243e, #837ebc, #0f0c29);
     color: #fff;
     overflow-x: hidden;
+    min-height: 100vh;
 }
 
 nav {
