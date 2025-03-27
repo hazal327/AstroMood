@@ -8,7 +8,10 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-FEEDBACK_FILE = Path("feedback_ratings.json")
+if app.config.get('TESTING'):
+    FEEDBACK_FILE = Path(__file__).parent / "test_feedback.json"
+else:
+    FEEDBACK_FILE = Path("feedback_ratings.json")
 if FEEDBACK_FILE.exists():
     with open(FEEDBACK_FILE, "r") as f:
         ratings = json.load(f)
