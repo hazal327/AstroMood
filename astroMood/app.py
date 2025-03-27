@@ -8,8 +8,12 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-ratings = []
 FEEDBACK_FILE = Path("feedback_ratings.json")
+if FEEDBACK_FILE.exists():
+    with open(FEEDBACK_FILE, "r") as f:
+        ratings = json.load(f)
+else:
+    ratings = []
 API_URL = "https://horoscope-app-api.vercel.app/api/v1"
 
 def get_zodiac_sign(month, day):
