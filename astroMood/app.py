@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import requests
-from datetime import datetime
 import random
+from datetime import datetime
+
 app = Flask(__name__)
 
 ratings = []
@@ -98,12 +99,6 @@ def get_rating_stats():
             "average": round(mean(ratings), 2),
             "total": len(ratings),
             "counts": {str(i): ratings.count(i) for i in range(1, 6)}
-        })
-    else:
-        return jsonify({
-            "average": 0,
-            "total": 0,
-            "counts": {str(i): 0 for i in range(1, 6)}
         })
         
 mood_activity_map = {
@@ -254,9 +249,8 @@ mood_genre_map = {
     "romantic": 10749,  # Romance
     "mystical": 14,  # Fantasy
 }
-
 zodiac_genre_map = {
-    "aries": 28,  # Action
+   "aries": 28,  # Action
     "taurus": 10749,  # Romance
     "gemini": 35,  # Comedy
     "cancer": 18,  # Drama
@@ -268,7 +262,8 @@ zodiac_genre_map = {
     "capricorn": 80,  # Crime
     "aquarius": 99,  # Documentary
     "pisces": 14,  # Fantasy
-}
+} 
+
 @app.route("/get_movie", methods=["POST"])
 def get_movie():
     try:
@@ -306,7 +301,7 @@ def get_movie():
 
     except Exception as e:
         return jsonify({"error": "Movie could not be retrieved", "details": str(e)})
+if __name__ == "__main__":
+    app.run(debug=True, port=5002)
 
-if __name__ == '__main__':
-    app.run(port=5001, debug=True)
 
