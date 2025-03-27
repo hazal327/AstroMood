@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import random
+import json
+from pathlib import Path
+from statistics import mean
 from datetime import datetime
 
 app = Flask(__name__)
 
 ratings = []
-
+FEEDBACK_FILE = Path("feedback_ratings.json")
 API_URL = "https://horoscope-app-api.vercel.app/api/v1"
 
 def get_zodiac_sign(month, day):
@@ -88,6 +91,8 @@ def submit_rating():
     rating = data.get("rating")
     if rating in [1, 2, 3, 4, 5]:
         ratings.append(rating)
+        with open(FEEDBACK_FILE, "w") as f:
+            json.dump(ratings, f)
         return jsonify({"success": True})
     return jsonify({"success": False}), 400
 
@@ -100,6 +105,14 @@ def get_rating_stats():
             "total": len(ratings),
             "counts": {str(i): ratings.count(i) for i in range(1, 6)}
         })
+@app.route("/rating_stats")
+def rating_stats():
+    return render_template(
+        "stats.html",
+        average=round(mean(ratings), 2) if ratings else 0,
+        total=len(ratings),
+        counts={str(i): ratings.count(i) for i in range(1,6)}
+    )
         
 mood_activity_map = {
     "happy": [
