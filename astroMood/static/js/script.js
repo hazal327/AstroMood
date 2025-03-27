@@ -195,30 +195,56 @@ document.getElementById('generateRecommendationBtn').addEventListener('click', a
     const resultDiv = document.getElementById('recommendationResult');
     let recommendationText = "";
 
-    if (selectedType === "activity") {
-        try {
-            const res = await fetch("/get_activity", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ 
-                    mood: selectedMood, 
-                    zodiac: calculatedSign 
-                })
-            });  // Artık kendi sunucuna istek atıyorsun
-            const data = await res.json();
-    
-            if (data.error) {
-                recommendationText = `Öneri bulunamadı: ${data.error}`;
-            } else {
-                recommendationText = `🎯 ${data.mood} ve ${data.zodiac} burcu için: ${data.activity}`;
+  /*  if (selectedType === "activity") {
+        const activityRecommendations = {
+            happy: [
+                "Arkadaşlarınla piknik yap", "Dans et", "Bir komedi filmi izle",
+                "Favori müziğinle temizlik yap", "Balon patlat", "Boyama yap"
+            ],
+            sad: [
+                "Yürüyüşe çık", "Günlük yaz", "Sevdiğin biriyle konuş",
+                "Eski fotoğraflara bak", "Kendine sıcak çikolata yap", "Gözyaşlarını müzikle bırak"
+            ],
+            stressed: [
+                "Nefes egzersizi yap", "Meditasyon dene", "Kitap oku",
+                "Ilık bir duş al", "Yoga videoları izle", "Kokulu mum yak"
+            ],
+            energetic: [
+                "Koşuya çık", "Spor salonuna git", "Yeni bir tarif dene",
+                "Dans et", "Macera oyunu oyna", "Yüksek tempolu müzikle ev temizle"
+            ]
+        };
+        const list = activityRecommendations[selectedMood] || [];
+        const activity = list[Math.floor(Math.random() * list.length)];
+        recommendationText = `🤸  ${activity}`;
+    } */
+
+        if (selectedType === "activity") {
+            try {
+                const res = await fetch("/get_activity", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ 
+                        mood: selectedMood, 
+                        zodiac: calculatedSign 
+                    })
+                });  // ArtÄ±k kendi sunucuna istek atÄ±yorsun
+                const data = await res.json();
+        
+                if (data.error) {
+                    recommendationText = `Aktivite bukunamadı: ${data.error}`;
+                } else {
+                    recommendationText = ` 🤸‍♀️ ${data.activity}`;
+                }
+            } catch (error) {
+                console.error("Aktivite önerisi hatası :", error);
+                resultDiv.innerHTML = `<p>Aktivite alınırken bir hata oluştu.</p>`;
             }
-        } catch (error) {
-            console.error("Aktivite önerisi hatası:", error);
-            resultDiv.innerHTML = `<p>Aktivite önerisi alınırken bir hata oluştu.</p>`;
         }
-    }
+    
+    
 
     else if (selectedType === "book") {
         // 📚 Google Books API - Kitap Önerisi
@@ -236,7 +262,7 @@ document.getElementById('generateRecommendationBtn').addEventListener('click', a
         const data = await res.json();
         const book = data.items[Math.floor(Math.random() * data.items.length)].volumeInfo;
     
-        recommendationText = `${book.title} - ${book.authors?.[0] || "Bilinmeyen Yazar"}`;
+        recommendationText = ` 📚  ${book.title} - ${book.authors?.[0] || "Bilinmeyen Yazar"}`;
     }
 
     else if (selectedType === "music") {
@@ -246,7 +272,8 @@ document.getElementById('generateRecommendationBtn').addEventListener('click', a
         const res = await fetch(`https://itunes.apple.com/search?term=${moodKeyword}&media=music&limit=25`);
         const data = await res.json();
         const track = data.results[Math.floor(Math.random() * data.results.length)];
-        recommendationText = `${track.trackName} - ${track.artistName}`;
+        recommendationText = ` 🎶  ${track.trackName} - ${track.artistName}`;
+       
     }
 
     else if (selectedType === "movie") {
@@ -264,13 +291,12 @@ document.getElementById('generateRecommendationBtn').addEventListener('click', a
 
             const data = await response.json();
 
-            recommendationText = `${data.title} - ${data.release}`;
+            recommendationText = `🎬 ${data.title} - ${data.release}`;
 
         } catch (error) {
-            console.error("Film önerisi hatası:", error);
-            resultDiv.innerHTML = `<p>Film önerisi alınırken bir hata oluştu.</p>`;
+            console.error("Film önerisi hatası", error);
+            resultDiv.innerHTML = `<p>Film önerisi oluşurken hata oluştur </p>`;
         }
-        
     }
 
     // Sonucu yazdır
@@ -278,35 +304,5 @@ document.getElementById('generateRecommendationBtn').addEventListener('click', a
         <h4>${selectedMood.toUpperCase()} modu için ${selectedType.toUpperCase()} önerisi:</h4>
         <p>${recommendationText}</p>
     `;
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const toggleBtn = document.getElementById("toggleMotivation");
-        const card = document.getElementById("motivationCard");
-        const textEl = document.getElementById("motivationText");
     
-        let quotes = [];
-    
-        // İlk yüklemede tüm alıntıları çek
-        fetch("https://type.fit/api/quotes")
-            .then(res => res.json())
-            .then(data => {
-                quotes = data;
-            })
-            .catch(() => {
-                textEl.innerText = "Motivasyon alıntıları yüklenemedi 😕";
-            });
-    
-        toggleBtn.addEventListener("click", () => {
-            if (quotes.length > 0) {
-                const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-                textEl.innerText = `"${randomQuote.text}" — ${randomQuote.author || "Bilinmeyen"}`;
-            } else {
-                textEl.innerText = "Motivasyon cümlesi bulunamadı 😅";
-            }
-    
-            card.classList.toggle("hidden");
-        });
-    });
-    
-
 });
