@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 from datetime import datetime
-
+import random
 app = Flask(__name__)
 
 ratings = []
@@ -105,31 +105,198 @@ def get_rating_stats():
             "total": 0,
             "counts": {str(i): 0 for i in range(1, 6)}
         })
+        
+mood_activity_map = {
+    "happy": [
+        "Have a picnic in the park",
+        "Organize a dance party",
+        "Take a spontaneous road trip",
+        "Host a game night with friends",
+        "Go to an amusement park"
+    ],
+    "sad": [
+        "Practice meditation",
+        "Write in a journal",
+        "Take a relaxing bath",
+        "Listen to calming music",
+        "Do some gentle yoga"
+    ],
+    "stressed": [
+        "Try a breathing exercise",
+        "Go for a nature walk",
+        "Practice mindfulness meditation",
+        "Do a puzzle or coloring activity",
+        "Take a relaxing art class"
+    ],
+    "energetic": [
+        "Go rock climbing",
+        "Try a high-intensity workout",
+        "Join a sports league",
+        "Go hiking",
+        "Take a dance fitness class"
+    ]
+}
 
+zodiac_activity_map = {
+    "aries": [
+        "Start a challenging physical project",
+        "Try a competitive sport",
+        "Attend a leadership workshop",
+        "Go on an adventure expedition"
+    ],
+    "taurus": [
+        "Visit a gourmet restaurant",
+        "Do gardening",
+        "Take a cooking class",
+        "Enjoy a relaxing spa day"
+    ],
+    "gemini": [
+        "Attend a public speaking workshop",
+        "Join a debate club",
+        "Take an improv comedy class",
+        "Go to a networking event"
+    ],
+    "cancer": [
+        "Have a family gathering",
+        "Create a scrapbook",
+        "Practice home cooking",
+        "Do a creative writing session"
+    ],
+    "leo": [
+        "Perform on stage",
+        "Attend a theater workshop",
+        "Host a party",
+        "Take a photography class"
+    ],
+    "virgo": [
+        "Organize a community cleanup",
+        "Take a detailed skill workshop",
+        "Do intensive study or learning",
+        "Practice precision crafts"
+    ],
+    "libra": [
+        "Attend an art exhibition",
+        "Take a group dance class",
+        "Practice meditation in a group",
+        "Volunteer for a social cause"
+    ],
+    "scorpio": [
+        "Do intense research",
+        "Practice martial arts",
+        "Take a psychology workshop",
+        "Engage in deep meditation"
+    ],
+    "sagittarius": [
+        "Plan an international trip",
+        "Take a philosophy course",
+        "Go on a hiking adventure",
+        "Attend a cultural festival"
+    ],
+    "capricorn": [
+        "Develop a business plan",
+        "Take a professional development course",
+        "Practice mountain climbing",
+        "Organize a networking event"
+    ],
+    "aquarius": [
+        "Join a tech workshop",
+        "Attend a science lecture",
+        "Participate in a community innovation project",
+        "Try virtual reality experiences"
+    ],
+    "pisces": [
+        "Take an art therapy class",
+        "Practice ocean-related activities",
+        "Attend a music workshop",
+        "Do spiritual meditation"
+    ]
+}
 
-@app.route("/get_activity")
-def get_activity():
+@app.route("/get_activity", methods=["POST"])
+def get_personalized_activity():
     try:
-        res = requests.get("https://www.boredapi.com/api/activity")
-        data = res.json()
-        return jsonify(data)
-    except Exception as e:
-        return jsonify({"error": "Aktivite getirilemedi", "details": str(e)})
-    
+        data = request.get_json()
+        mood = data.get("mood", "").lower()
+        zodiac = data.get("zodiac", "").lower()
 
-@app.route("/get_movie")
+        # Validate inputs
+        if mood not in mood_activity_map or zodiac not in zodiac_activity_map:
+            return jsonify({"error": "Invalid mood or zodiac sign"}), 400
+
+        # Get activities for mood and zodiac
+        mood_activities = mood_activity_map.get(mood, [])
+        zodiac_activities = zodiac_activity_map.get(zodiac, [])
+
+        # Combine and randomize activities
+        all_activities = mood_activities + zodiac_activities
+        
+        if not all_activities:
+            return jsonify({"error": "No activities found"}), 404
+
+        # Choose a random activity
+        activity = random.choice(all_activities)
+
+        return jsonify({
+            "activity": activity,
+            "mood": mood.capitalize(),
+            "zodiac": zodiac.capitalize()
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+ 
+TMDB_API_KEY = "ac398ec83301c3b8274302c22fbffef3"    
+# Map moods and zodiac signs to movie genres
+mood_genre_map = {
+    "happy": 35,  # Comedy
+    "sad": 18,  # Drama
+    "excited": 28,  # Action
+    "romantic": 10749,  # Romance
+    "mystical": 14,  # Fantasy
+}
+
+zodiac_genre_map = {
+    "aries": 28,  # Action
+    "taurus": 10749,  # Romance
+    "gemini": 35,  # Comedy
+    "cancer": 18,  # Drama
+    "leo": 12,  # Adventure
+    "virgo": 9648,  # Mystery
+    "libra": 10751,  # Family
+    "scorpio": 27,  # Horror
+    "sagittarius": 878,  # Sci-Fi
+    "capricorn": 80,  # Crime
+    "aquarius": 99,  # Documentary
+    "pisces": 14,  # Fantasy
+}
+@app.route("/get_movie", methods=["POST"])
 def get_movie():
     try:
-        url = f"https://api.themoviedb.org/3/discover/movie?api_key={TMDB_API_KEY}&sort_by=popularity.desc&language=tr-TR"
+        data = request.get_json()
+        mood = data.get("mood", "").lower()
+        zodiac = data.get("zodiac", "").lower()
+
+        genre_ids = set()
+
+        if mood in mood_genre_map:
+            genre_ids.add(mood_genre_map[mood])
+        if zodiac in zodiac_genre_map:
+            genre_ids.add(zodiac_genre_map[zodiac])
+
+        if not genre_ids:
+            return jsonify({"error": "Mood or Zodiac sign not recognized."}), 400
+
+        genre_ids_str = ",".join(map(str, genre_ids))
+
+        url = f"https://api.themoviedb.org/3/discover/movie?api_key={TMDB_API_KEY}&with_genres={genre_ids_str}&sort_by=popularity.desc&language=en-US&with_original_language=en"
+
         response = requests.get(url)
-        data = response.json()
-        movies = data.get("results", [])
+        movies = response.json().get("results", [])
 
         if not movies:
-            return jsonify({"error": "Film bulunamadı"})
+            return jsonify({"error": "No movies found for this mood and zodiac sign."})
 
-        from random import choice
-        movie = choice(movies)
+        movie = random.choice(movies)
 
         return jsonify({
             "title": movie["title"],
@@ -138,10 +305,8 @@ def get_movie():
         })
 
     except Exception as e:
-        return jsonify({"error": "Film alınamadı", "details": str(e)})
-    
+        return jsonify({"error": "Movie could not be retrieved", "details": str(e)})
 
 if __name__ == '__main__':
     app.run(port=5001, debug=True)
-
 
