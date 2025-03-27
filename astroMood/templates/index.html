@@ -6,6 +6,52 @@
     <title>AstroMood - Astroloji Rehberiniz</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        .motivation-widget {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+        }
+
+        .motivator-circle {
+            width: 60px;
+            height: 60px;
+            background-color: #9d50bb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .motivator-card {
+            margin-top: 14px;
+            padding: 20px 28px; /* kutu içi boşluğu büyütüldü */
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+            font-size: 1.3rem; /* yazı büyütüldü */
+            font-style: italic;
+            line-height: 1.6;  /* satır aralığı */
+            color: #222;
+            max-width: 360px; /* kutunun genişliği artırıldı */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            display: none;
+        }
+
+        .motivator-card.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0)
+        }
+    </style>
 </head>
 
 <body>
@@ -109,14 +155,124 @@
     <!-- Yıldız Animasyonları -->
     <section id="stars"></section>
 
-    <div class="motivation-widget" id="motivationWidget">
-        <div class="motivator-toggle" id="toggleMotivation">💬</div>
-        <div class="motivator-card hidden" id="motivationCard">
-          <p id="motivationText">Burada motivasyon cümlesi görünecek.</p>
-        </div>
-      </div>
-      
-      <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+   <!-- Motivasyon Widget'ı -->
+   <div class="motivation-widget">
+    <div class="motivator-circle" id="motivationTrigger">💬</div>
+    <div class="motivator-card" id="motivationCard">
+        <p id="motivationText">Bugün harika bir gün olabilir!</p>
+    </div>
+</div>
 
+<!-- Script doğrudan burada yazıldı -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const trigger = document.getElementById("motivationTrigger");
+        const card = document.getElementById("motivationCard");
+        const text = document.getElementById("motivationText");
+
+        const motivationalQuotesByMood = {
+    happy: [
+        "Gülümse, mutluluğun seninle 💛",
+        "Pozitif düşün, güzel şeyler olsun 🌞",
+        "Bugün keyfini çıkar, bunu hak ettin 🎉",
+        "Bugünün ışığı senin içinden doğuyor ☀️",
+        "Mutluluğunu başkalarına bulaştır, en güzel zincir bu 💫",
+        "Kalbindeki neşeyle her şey daha güzel 🌸",
+        "Gülümsemen dünyayı güzelleştiriyor 😊",
+        "İçindeki çocuk hep oynasın 🎈",
+        "Bugün kahkaha atmak için sebepler yarat 🎉",
+        "Mutluluk paylaşınca büyür, hemen biriyle paylaş! 💌",
+        "Kendine teşekkür et, bu güzel ruh hali için 🙌",
+        "Senin pozitif enerjin etrafındakileri aydınlatıyor 🌟",
+        "Hayat bazen sadece keyif almaktır – izin ver 🎶"
+    ],
+    sad: [
+        "Unutma, bu da geçecek 💧",
+        "Gözyaşlarının ardında gökkuşağı var 🌈",
+        "Her fırtına güneşle biter ☀️",
+        "Yalnız değilsin, evren seninle 🌌",
+        "Üzgün hissetmen çok insanca, geçeceğini bil 💧",
+        "Kırıldığın yerden ışık sızar, merak etme 🌙",
+        "Bugün ağlamak gerekiyorsa, bırak aksın 🍃",
+        "Kendine nazik ol, duygularınla barış ☁️",
+        "Bu da geçecek, geçmeyen hiçbir his yok ⏳",
+        "Duygularını bastırma, onları kabul et ❤️",
+        "Yalnız değilsin, hissettiklerini anlayan biri hep vardır 🤝",
+        "Sessizlik bazen en iyi terapidir 🌌",
+        "Kendini sar, sanki en iyi arkadaşın sensin 🧣",
+        "Hissediyorsan yaşıyorsun, bu da bir mucize 🌊"
+    ],
+    stressed: [
+        "Derin nefes al, her şey yoluna girecek 🌿",
+        "Bazen durmak en iyisidir 🧘‍♀️",
+        "Kendine şefkatle yaklaş 💆‍♀️",
+        "İç sesini dinle, o seni doğruya götürür 🧭",
+        "Kendine zaman ayırmayı unutma ⏳",
+        "Derin nefes al, her şey yoluna girecek 🌿",
+        "Bazen durmak en iyisidir 🧘‍♀️",
+        "Kendine zaman ayırmayı unutma ⏳",
+        "Dünyayı sen düzeltmek zorunda değilsin 🌍",
+        "Şu an sadece var olmak bile yeterli 💆‍♀️",
+        "Zihnini sustur, kalbini dinle 💖",
+        "Bir şeyleri kontrol edemiyorsan, bırak aksın 🍂",
+        "Bu tempoda bile nefes aldığın için güçlüsün 🌬️",
+        "Küçük bir mola her şeyi değiştirebilir ☕",
+        "İç sesin seni sakinleştirsin, dış sesleri kısmayı unutma 🎧"
+    ],
+    energetic: [
+        "Enerjini doğru yöne kanalize et ⚡",
+        "Haydi, bugün dünyayı sarsma zamanı 🌍",
+        "Senin hızına kimse yetişemez 🏃‍♀️",
+        "Bugün dünyayı sallamaya hazırsın ⚡",
+        "O enerjiyi hayaline yönlendir! 🚀",
+        "Senin hızına kimse yetişemez 🏃‍♀️",
+        "Haydi, yaratma zamanı! 🎨",
+        "Vücudun ve ruhun bugün aynı ritimde 🕺",
+        "Bu enerjiyi iyiye kullan, dünya seni izliyor 👀",
+        "Senin gücün dalga etkisi yaratır 🌊",
+        "Her şey seninle başlar, başlat! 🔥",
+        "Kıpır kıpırsın, harekete geçme zamanı! 🎯",
+        "Sen bugün için doğmuşsun 🌟"
+    ],
+    general: [
+        "Kendine inan, her şey seninle başlar 💫",
+        "Her gün yeni bir şanstır 🌅",
+        "Başlamak için mükemmel olman gerekmez 👣",
+        "Zirve, sabredenlere açıktır 🏔️",
+        "Bugün mucizelere açık ol ✨",
+        "Zorluklar seni büyütür 🌱",
+        "Kendine inan, her şey seninle başlar 💫",
+        "Her gün yeni bir şanstır 🌅",
+        "Zorluklar seni büyütür 🌱",
+        "Sabırla devam et, yolda ilerliyorsun ⛩️",
+        "Düşsen bile kalkacak güce sahipsin 🧗‍♀️",
+        "Her gün yeniden başlamak için bir fırsat 🎈",
+        "Karanlık bile yıldızları gösterir ✨",
+        "Sen yeterlisin, olduğun halinle 🌼",
+        "Yaşamak, yeniden başlamak için bir neden 💖",
+        "Bugün de senin günün olabilir! 🌞"
+    ]
+    };
+    function getMotivationalQuote() {
+        let moodQuotes = motivationalQuotesByMood[selectedMood] || motivationalQuotesByMood.general;
+        return moodQuotes[Math.floor(Math.random() * moodQuotes.length)];
+    }
+
+        trigger.addEventListener("click", () => {
+            //const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+            const quote = getMotivationalQuote();
+            text.innerText = quote;
+            card.classList.toggle("show");
+
+            // 20 saniye sonra otomatik kapansın
+            setTimeout(() => {
+                    card.classList.remove("show");
+                }, 5000);
+        });
+    });
+</script>
+      
+
+ <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
