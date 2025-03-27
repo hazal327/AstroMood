@@ -243,11 +243,10 @@ def get_personalized_activity():
 TMDB_API_KEY = "ac398ec83301c3b8274302c22fbffef3"    
 # Map moods and zodiac signs to movie genres
 mood_genre_map = {
-    "happy": 35,  # Comedy
+    "happy": 10751,  # Comedy
     "sad": 18,  # Drama
-    "excited": 28,  # Action
-    "romantic": 10749,  # Romance
-    "mystical": 14,  # Fantasy
+    "energetic": 28,  # Action
+    "stressed": 35,  # Comedy
 }
 zodiac_genre_map = {
    "aries": 28,  # Action
