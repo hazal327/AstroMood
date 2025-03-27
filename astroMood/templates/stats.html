@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Feedback İstatistikleri</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .stats-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .star-bar { 
+            height: 20px;
+            background: #eee;
+            margin: 5px 0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .star-fill {
+            height: 100%;
+            background: #ffd700;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        .star-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-box">
+        <h2>Toplam Değerlendirmeler</h2>
+        <p>Ortalama: ⭐ {{ "%.2f"|format(average) }} ({{ total }} oy)</p>
+        
+        {% for i in range(5, 0, -1) %}
+        <div class="star-row">
+            <span>{{ i }} yıldız:</span>
+            <div class="star-bar">
+                <div class="star-fill" style="width: {{ ((counts.get(i|string, 0)/total * 100) if total > 0 else 0)|round(2) ~ '%' | safe }};"></div>
+            </div>
+            <span>({{ counts.get(i|string, 0) }})</span>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
