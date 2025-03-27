@@ -197,17 +197,26 @@ document.getElementById('generateRecommendationBtn').addEventListener('click', a
 
     if (selectedType === "activity") {
         try {
-            const res = await fetch("/get_activity");  // Artık kendi sunucuna istek atıyorsun
+            const res = await fetch("/get_activity", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ 
+                    mood: selectedMood, 
+                    zodiac: calculatedSign 
+                })
+            });  // Artık kendi sunucuna istek atıyorsun
             const data = await res.json();
     
-            if (data && data.activity) {
-                recommendationText = `🎯 Önerilen Aktivite: ${data.activity}`;
+            if (data.error) {
+                recommendationText = `Öneri bulunamadı: ${data.error}`;
             } else {
-                recommendationText = "Aktivite bulunamadı. 😕";
+                recommendationText = `🎯 ${data.mood} ve ${data.zodiac} burcu için: ${data.activity}`;
             }
         } catch (error) {
-            recommendationText = "Şu anlık aktivite önerilemedi 😕";
-            console.error("Aktivite API hatası:", error);
+            console.error("Aktivite önerisi hatası:", error);
+            resultDiv.innerHTML = `<p>Aktivite önerisi alınırken bir hata oluştu.</p>`;
         }
     }
 
@@ -240,20 +249,28 @@ document.getElementById('generateRecommendationBtn').addEventListener('click', a
         recommendationText = `${track.trackName} - ${track.artistName}`;
     }
 
-    else {  //selected type is film 
+    else if (selectedType === "movie") {
         try {
-            const res = await fetch("/get_movie");
-            const data = await res.json();
-    
-            if (data.title) {
-                recommendationText = `🎬 ${data.title} (${data.release})\n${data.overview}`;
-            } else {
-                recommendationText = "Film önerisi bulunamadı 😕";
-            }
+            const response = await fetch("/get_movie", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ 
+                    mood: selectedMood, 
+                    zodiac: calculatedSign 
+                })
+            });
+
+            const data = await response.json();
+
+            recommendationText = `${data.title} - ${data.release}`;
+
         } catch (error) {
-            recommendationText = "Film önerisi alınırken hata oluştu 😕";
-            console.error("Film API hatası:", error);
+            console.error("Film önerisi hatası:", error);
+            resultDiv.innerHTML = `<p>Film önerisi alınırken bir hata oluştu.</p>`;
         }
+        
     }
 
     // Sonucu yazdır
